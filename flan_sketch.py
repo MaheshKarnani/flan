@@ -173,7 +173,7 @@ tim.sleep(2)
 
  #digital lines to arduino for food selection
 food_select1 = DigitalOutputDevice(19)
-food_select1 = DigitalOutputDevice(26)
+food_select2 = DigitalOutputDevice(26)
 
 # set initial values, time stamps animal histories.
 licks1=0
@@ -189,6 +189,7 @@ tag2=0
 tag3=0
 known_tags=[1111111199198,19645782,19647186244,19644194143,1102000232]
 food_flags=[0,0,0,0,0,0,0,0]
+food_flags2=[0,0,0,0,0,0,0,0]
 swap_threshold=10
 cumulative1=[0,0,0,0,0,0,0,0]
 cumulative2=[0,0,0,0,0,0,0,0]
@@ -232,6 +233,8 @@ swap_list1 = {
     "Unit":1,
     "Drinks1" : [drinks1],
     "Drinks2" : [drinks2],
+    "Drinks3" : [drinks3],
+    "Drinks4" : [drinks4],
     "Swap_direction" : ["initialize"]
     }
 swap_list2 = {
@@ -239,6 +242,8 @@ swap_list2 = {
     "Start_Time": [datetime.now()],
     "Animal": [tag2],
     "Unit":2,
+    "Drinks1" : [drinks1],
+    "Drinks2" : [drinks2],
     "Drinks3" : [drinks3],
     "Drinks4" : [drinks4],
     "Swap_direction" : ["initialize"]
@@ -311,6 +316,7 @@ while True:
             cumulative2[anin]=cumulative2[anin]+int(drinks2)
             if food_flags[anin]==0:
                 if cumulative1[anin]>swap_threshold:
+                    print('time to swap!')
                     swap_list1.update({'Drinks1':[cumulative1[anin]]})#for previous animal
                     swap_list1.update({'Drinks2':[cumulative2[anin]]})#for previous animal
                     swap_list1.update({'Swap_direction':['1->2']})#for previous animal
@@ -331,8 +337,10 @@ while True:
         if tag1 in known_tags:
             if food_flags[known_tags.index(tag1)]==0:
                 food_select1.off()
+                print('swap line off')
             else:
                 food_select1.on()
+                print('swap line on')
                 
         licks1=0
         licks2=0
@@ -346,7 +354,6 @@ while True:
         
     if RFID2_detect.value == 0:
         print("unit2")
-        tag2=int(scan_tag2(mux[0]["instance"],1))
         ser.write(str.encode('b'))
         Ard_data = ser.readline()
         Ard_data = Ard_data.decode("utf-8","ignore")
@@ -357,6 +364,38 @@ while True:
         event_list2.update({'Drinks1':[drinks3]})#for previous animal
         event_list2.update({'Drinks2':[drinks4]})#for previous animal
         save.append_event(event_list2)#for previous animal
+        
+        #add identity cumulative update and drink selection
+        if tag2 in known_tags:
+            anin2=known_tags.index(tag2)
+            cumulative3[anin2]=cumulative3[anin2]+int(drinks3)
+            print(cumulative3)
+            cumulative4[anin2]=cumulative4[anin2]+int(drinks4)
+            if food_flags2[anin2]==0:
+                if cumulative3[anin2]>swap_threshold:
+                    swap_list2.update({'Drinks3':[cumulative3[anin2]]})#for previous animal
+                    swap_list2.update({'Drinks4':[cumulative4[anin2]]})#for previous animal
+                    swap_list2.update({'Swap_direction':['3->4']})#for previous animal
+                    cumulative3[anin2]=0
+                    food_flags2[anin2]=1
+                    save.append_swap(swap_list2)#for previous animal
+            else:        
+                if cumulative4[anin2]>swap_threshold:
+                    swap_list2.update({'Drinks3':[cumulative3[anin2]]})#for previous animal
+                    swap_list2.update({'Drinks4':[cumulative4[anin2]]})#for previous animal
+                    swap_list2.update({'Swap_direction':['4->3']})#for previous animal
+                    cumulative4[anin2]=0
+                    food_flags2[anin2]=0
+                    save.append_swap(swap_list2)#for previous animal
+            
+        tag2=int(scan_tag2(mux[0]["instance"],1))
+        print(known_tags.index(tag2))
+        if tag1 in known_tags:
+            if food_flags2[known_tags.index(tag2)]==0:
+                food_select2.off()
+            else:
+                food_select2.on()
+                
         licks3=0
         licks4=0
         drinks3=0
