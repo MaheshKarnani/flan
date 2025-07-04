@@ -15,10 +15,9 @@ import requests
 from github import Github, InputGitTreeElement
 import keyboard
 
-
-
 #Initialization routine
 mode=1 #experiment mode 0=habituation, 1=variable, 2=induction, 3=post, 4=induction_repeat, 5=post_repeat
+swap_threshold=5 #how many drops before covert swap
 #load scale calibration files
 scale_cal_filepath="/home/flan1/Documents/Data/ScaleCal.json"
 scale_tare_filepath="/home/flan1/Documents/Data/ScaleTare.json"
@@ -54,7 +53,7 @@ def create_bus():
 def initialize_scales(mux):
     scales = []
     bus = create_bus()
-    ports = [0, 1, 2, 3]
+    ports = [0, 1, 2, 3, 4]
     for port in ports:
         enable_port(mux, port)
         nau = PyNAU7802.NAU7802()
@@ -155,17 +154,17 @@ get_reading(mux[0]["instance"],3)
 tag1=int(scan_tag1(mux[0]["instance"],0))
 tag2=int(scan_tag2(mux[0]["instance"],1))
 tag3=int(scan_tag3(mux[0]["instance"],2))
-# tag4=int(scan_tag4(mux[0]["instance"],4))
+tag4=int(scan_tag4(mux[0]["instance"],4))
 print(tag1)
 print(tag2)
 print(tag3)
-# print(tag4)
+print(tag4)
 
 #RFID detection interrupts
 RFID1_detect = DigitalInputDevice(21)
 RFID2_detect = DigitalInputDevice(20, pull_up=False)
 RFID3_detect = DigitalInputDevice(16) 
-# detect4 = DigitalInputDevice(26)
+RFID4_detect = DigitalInputDevice(12)
 
   #serial to arduino
 ser = serial.Serial('/dev/ttyUSB0', 115200)
@@ -187,10 +186,10 @@ drinks4=0
 tag1=0 #initialize animal
 tag2=0
 tag3=0
-known_tags=[1111111199198,19645782,19647186244,19644194143,1102000232]
+tag4=0
+known_tags=[1111111199198,1111110210210,19647186244,19644194143,1102000232]
 food_flags=[0,0,0,0,0,0,0,0]
 food_flags2=[0,0,0,0,0,0,0,0]
-swap_threshold=10
 cumulative1=[0,0,0,0,0,0,0,0]
 cumulative2=[0,0,0,0,0,0,0,0]
 cumulative3=[0,0,0,0,0,0,0,0]
@@ -308,11 +307,10 @@ while True:
         event_list1.update({'Drinks2':[drinks2]})#for previous animal
         save.append_event(event_list1)#for previous animal
         
-        #add identity cumulative update and drink selection
+        #identity based cumulative update and drink selection
         if tag1 in known_tags:
             anin=known_tags.index(tag1)
             cumulative1[anin]=cumulative1[anin]+int(drinks1)
-            print(cumulative1)
             cumulative2[anin]=cumulative2[anin]+int(drinks2)
             if food_flags[anin]==0:
                 if cumulative1[anin]>swap_threshold:
@@ -337,10 +335,10 @@ while True:
         if tag1 in known_tags:
             if food_flags[known_tags.index(tag1)]==0:
                 food_select1.off()
-                print('swap line off')
+                print('spout1 swap line LOW')
             else:
                 food_select1.on()
-                print('swap line on')
+                print('spout1 swap line HIGH')
                 
         licks1=0
         licks2=0
@@ -365,11 +363,10 @@ while True:
         event_list2.update({'Drinks2':[drinks4]})#for previous animal
         save.append_event(event_list2)#for previous animal
         
-        #add identity cumulative update and drink selection
+        #identity bsed cumulative update and drink selection
         if tag2 in known_tags:
             anin2=known_tags.index(tag2)
             cumulative3[anin2]=cumulative3[anin2]+int(drinks3)
-            print(cumulative3)
             cumulative4[anin2]=cumulative4[anin2]+int(drinks4)
             if food_flags2[anin2]==0:
                 if cumulative3[anin2]>swap_threshold:
@@ -393,9 +390,11 @@ while True:
         if tag1 in known_tags:
             if food_flags2[known_tags.index(tag2)]==0:
                 food_select2.off()
+                print('spout2 swap line LOW')
             else:
                 food_select2.on()
-                
+                print('spout2 swap line HIGH')
+             
         licks3=0
         licks4=0
         drinks3=0
@@ -413,19 +412,9 @@ while True:
         weight_list.update({'Weight': [weight3]})
         save.append_weight(weight_list)#for current animal
         action_time=datetime.now()
-# read R1
-# 
-# poll lick/consumption data from arduino
-# write data from previous animal
-# 
-# 
-# prime D1/D2
-# 
-# wait for lick.
-# 
-#     dispense
-# 
-#     wait interval
-# 
-#     if another animal detected in R1, break out of loop
- 
+        
+    if RFID4_detect.value == 0:
+        print("manual RFID")
+        tag4=int(scan_tag4(mux[0]["instance"],4))
+        print(tag4)
+
