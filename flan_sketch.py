@@ -187,7 +187,8 @@ tag1=0 #initialize animal
 tag2=0
 tag3=0
 tag4=0
-known_tags=[1111111199198,1111110210210,19647186244,19644194143,1102000232]
+known_tags=[19647231169,
+1111110209209,1111110252252,1111111151150,1111111134135,196471892,19647186244,19645782,19644148217]
 food_flags=[0,0,0,0,0,0,0,0]
 food_flags2=[0,0,0,0,0,0,0,0]
 cumulative1=[0,0,0,0,0,0,0,0]
@@ -224,6 +225,13 @@ weight_list = {
     "Animal": [tag3],
     "Unit":3,
     "Weight": [round(float(get_reading(mux[0]["instance"],3)),2)],
+}
+weight_list2 = {
+    "Mode" : ["initialize"], 
+    "Start_Time": [datetime.now()],
+    "Animal": [tag4],
+    "Unit":5,
+    "Weight": [0],
 }
 swap_list1 = {
     "Mode" : ["initialize"], 
@@ -280,6 +288,7 @@ save.append_swap(swap_list2)
 event_list1.update({'Mode': [mode]})
 event_list2.update({'Mode': [mode]})
 weight_list.update({'Mode': [mode]})
+weight_list2.update({'Mode': [mode]})
 swap_list1.update({'Mode': [mode]})
 swap_list2.update({'Mode': [mode]})
 # event_list4.update({'Mode': [mode]})
@@ -331,8 +340,9 @@ while True:
                     save.append_swap(swap_list1)#for previous animal
             
         tag1=int(scan_tag1(mux[0]["instance"],0))
-        print(known_tags.index(tag1))
+        
         if tag1 in known_tags:
+            print(known_tags.index(tag1))
             if food_flags[known_tags.index(tag1)]==0:
                 food_select1.off()
                 print('spout1 swap line LOW')
@@ -385,9 +395,9 @@ while True:
                     food_flags2[anin2]=0
                     save.append_swap(swap_list2)#for previous animal
             
-        tag2=int(scan_tag2(mux[0]["instance"],1))
-        print(known_tags.index(tag2))
-        if tag1 in known_tags:
+        tag2=int(scan_tag2(mux[0]["instance"],1)) 
+        if tag2 in known_tags:
+            print(known_tags.index(tag2))
             if food_flags2[known_tags.index(tag2)]==0:
                 food_select2.off()
                 print('spout2 swap line LOW')
@@ -417,4 +427,7 @@ while True:
         print("manual RFID")
         tag4=int(scan_tag4(mux[0]["instance"],4))
         print(tag4)
+        weight_list2.update({'Start_Time': [datetime.now()]})       
+        weight_list2.update({'Animal': [tag4]})
+        save.append_weight(weight_list2)#for current animal
 
