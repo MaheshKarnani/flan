@@ -189,12 +189,12 @@ tag3=0
 tag4=0
 known_tags=[19647231169,
 1111110209209,1111110252252,1111111151150,1111111134135,196471892,19647186244,19645782,19644148217]
-food_flags=[0,0,0,0,0,0,0,0]
-food_flags2=[0,0,0,0,0,0,0,0]
-cumulative1=[0,0,0,0,0,0,0,0]
-cumulative2=[0,0,0,0,0,0,0,0]
-cumulative3=[0,0,0,0,0,0,0,0]
-cumulative4=[0,0,0,0,0,0,0,0]
+food_flags=[0,0,0,0,0,0,0,0,0]
+food_flags2=[0,0,0,0,0,0,0,0,0]
+cumulative1=[0,0,0,0,0,0,0,0,0]
+cumulative2=[0,0,0,0,0,0,0,0,0]
+cumulative3=[0,0,0,0,0,0,0,0,0]
+cumulative4=[0,0,0,0,0,0,0,0,0]
 #saving and uploading
 savepath="/home/flan1/Documents/Data/"
 event_list1 = {
@@ -296,7 +296,8 @@ upload_time=datetime.now()
 upload_interval=timedelta(hours=6) #minimum interval between uploads, hours suggested
 action_time=datetime.now()
 action_interval=timedelta(minutes=15) #safe interval from last detection to start upload, 15 min suggested
-
+ser.write(str.encode('d'))
+ser.write(str.encode('c'))
 # 
 # execution loop
 #
@@ -414,15 +415,25 @@ while True:
         action_time=datetime.now()
         
     if RFID3_detect.value == 0:
+        ser.write(str.encode('d'))
         print("unit3")
-        weight_list.update({'Start_Time': [datetime.now()]})
         tag3=int(scan_tag3(mux[0]["instance"],2))
-        weight_list.update({'Animal': [tag3]})
-        weight3=round(float(get_reading(mux[0]["instance"],3)),2) 
-        weight_list.update({'Weight': [weight3]})
-        save.append_weight(weight_list)#for current animal
-        action_time=datetime.now()
-        
+        if tag3 in known_tags:
+            weight_list.update({'Start_Time': [datetime.now()]})
+            n=0
+            wn=list()
+            while n<10:
+                weight3=round(float(get_reading(mux[0]["instance"],3)),2) 
+                wn.append(weight3)
+                n=n+1
+                if RFID3_detect.value == 0:
+                    tag3=int(scan_tag3(mux[0]["instance"],2))
+            weight_list.update({'Animal': [tag3]})
+            weight_list.update({'Weight': [max(wn)]})
+            save.append_weight(weight_list)#for current animal
+            action_time=datetime.now()
+            print(max(wn))
+        ser.write(str.encode('c'))
     if RFID4_detect.value == 0:
         print("manual RFID")
         tag4=int(scan_tag4(mux[0]["instance"],4))
