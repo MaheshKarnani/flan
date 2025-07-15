@@ -8,8 +8,8 @@ import matplotlib.dates as mdates
 import statistics
 plt.close('all')
 
-start_date=date(2025,7,9) 
-marker_times=[datetime(2025,7,11,12,0,0), datetime(2025,7,18,12,0,0), datetime(2025,7,25,12,0,0)]#add important dates here to add vertical lines on last plot
+start_date=date(2025,7,14) 
+marker_times=[datetime(2025,7,17,12,0,0), datetime(2025,7,18,12,0,0)]#add important dates here to add vertical lines on last plot
 last_date=date.today() #OR TYPE DESIRED DATE ON NEXT LINE AND UNCOMMENT IT
 # last_date=date(2025,4,8)
 datetag=str(last_date)
@@ -32,7 +32,7 @@ for i in range(len(unique_tags)):
     filtered_an = data.loc[data['Animal'] == unique_tags[i]] 
     filtered_min = filtered_an.loc[filtered_an['Weight'] > filtermin]
     filtered_minmax =  filtered_min.loc[filtered_min['Weight'] < filtermax]
-    display(filtered_minmax.head(20))
+    #display(filtered_minmax.head(20))
     x=mdates.datestr2num(filtered_minmax['Start_Time']) 
     ax1.plot(x , filtered_minmax['Weight'], linestyle='-', marker='o', color=[1/len(unique_tags)*i, 1-1/len(unique_tags)*i, 1-1/len(unique_tags)*i, .5])
     # ax1.set_xticks(x)
