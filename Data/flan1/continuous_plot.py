@@ -19,20 +19,28 @@ filtermin=15 #lower limit in g
 filtermax=35 #upper limit in g 
 d=last_date-start_date
 days_to_plot=d.days
-loadpath="/home/maheshkarnani/Documents/Data/flan_pilot/"
+loadpath="/home/maheshkarnani/Documents/Data/flan_pilot/flan1/"
 
 data_coll_weight = pd.read_csv(loadpath + str(start_date) + "_weights.csv") 
 data_coll_events = pd.read_csv(loadpath + str(start_date) + "_events.csv")
+data_unit5_coll=data_coll_weight.loc[data_coll_weight['Unit'] == 5] 
+b=len(known_tags)
 for j in range(days_to_plot):
     day=start_date+timedelta(days = j+1) 
     data = pd.read_csv(loadpath + str(day) + "_weights.csv") 
     frames=[data_coll_weight,data]
     data_coll_weight=pd.concat(frames)
+    data_unit5=data.loc[data['Unit'] == 5] 
+    if data_unit5.empty:
+        print('no manual')
+    else:
+        frames=[data_unit5_coll,data_unit5.iloc[::-1]]
+        data_unit5_coll=pd.concat(frames)
+        print(data_unit5_coll)
     data = pd.read_csv(loadpath + str(day) + "_events.csv") 
     frames=[data_coll_events,data]
     data_coll_events=pd.concat(frames)
-    
-#data_coll.to_csv (r'/home/flan2/Documents/Data/export_dataframe.csv', index = None, header=True)
+#data_coll.to_csv (r'/home/flan2/Documents/Data/flan2/export_dataframe.csv', index = None, header=True)
 tags=data_coll_weight['Animal']
 unique_tags=list(set(tags))
 print('found unique tags:')
@@ -49,7 +57,11 @@ for i in range(len(known_tags)):
     filtered_minmax =  filtered_min.loc[filtered_min['Weight'] < filtermax]
     display(filtered_minmax.head(20))
     x=mdates.datestr2num(filtered_minmax['Start_Time']) 
-    ax1.plot(x , filtered_minmax['Weight'], linestyle='-', marker='o', color=[i/len(known_tags), 1-i/len(known_tags), 1-i/len(known_tags), .3], linewidth=1)
+    ax1.plot(x , filtered_minmax['Weight'], linestyle='-', marker='o', color=[i/len(known_tags), 1-i/len(known_tags), 1-i/len(known_tags), .3], linewidth=3)
+    filtered_an = data_unit5_coll.loc[data_unit5_coll['Animal'] == known_tags[i]] 
+    y=filtered_an['Weight']
+    x=mdates.datestr2num(filtered_an['Start_Time']) 
+    ax1.plot(x, y , linestyle='-', marker='s', color=[i/b, 1-i/b, 1-i/b, .9],linewidth=1,label="manual")
 ax1.set_ylabel("weight, g")
 ax1.set_xticklabels(x,rotation=30,ha='right')
 fmt=mdates.DateFormatter('%m-%d %H:%M:%S')
