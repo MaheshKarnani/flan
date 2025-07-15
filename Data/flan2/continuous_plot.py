@@ -9,8 +9,8 @@ import statistics
 plt.close('all')
 
 #concatenate
-start_date=date(2025,7,8) 
-marker_times=[datetime(2025,7,11,12,0,0), datetime(2025,7,18,12,0,0), datetime(2025,7,25,12,0,0)]#add important dates here to add vertical lines on last plot
+start_date=date(2025,7,14) 
+marker_times=[datetime(2025,7,15,12,0,0), datetime(2025,7,18,12,0,0)]#add important dates here to add vertical lines on last plot
 last_date=date.today() #OR TYPE DESIRED DATE ON NEXT LINE AND UNCOMMENT IT
 # last_date=date(2025,4,8)
 datetag=str(last_date)
@@ -21,14 +21,14 @@ d=last_date-start_date
 days_to_plot=d.days
 loadpath="/home/flan2/Documents/Data/"
 
-data_coll_weight = pd.read_csv(loadpath + str(start_date) + "_weights.csv") #filter time to 12h bin
-data_coll_events = pd.read_csv(loadpath + str(start_date) + "_events.csv") #filter time to 12h bin
+data_coll_weight = pd.read_csv(loadpath + str(start_date) + "_weights.csv") 
+data_coll_events = pd.read_csv(loadpath + str(start_date) + "_events.csv")
 for j in range(days_to_plot):
     day=start_date+timedelta(days = j+1) 
-    data = pd.read_csv(loadpath + str(day) + "_weights.csv") #filter time to 12h bin
+    data = pd.read_csv(loadpath + str(day) + "_weights.csv") 
     frames=[data_coll_weight,data]
     data_coll_weight=pd.concat(frames)
-    data = pd.read_csv(loadpath + str(day) + "_events.csv") #filter time to 12h bin
+    data = pd.read_csv(loadpath + str(day) + "_events.csv") 
     frames=[data_coll_events,data]
     data_coll_events=pd.concat(frames)
     
