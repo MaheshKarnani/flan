@@ -1,8 +1,8 @@
-//FLAN with servo SEM 7.7.2025
 #include <Servo.h>
 Servo servo1;// SEM mechanism
 unsigned long interval=1000;
-unsigned long duration=300;
+unsigned long duration=30;
+bool calibration_mode=false;
 #include <CapacitiveSensor.h>
 CapacitiveSensor cs_1 = CapacitiveSensor(7,2);
 CapacitiveSensor cs_2 = CapacitiveSensor(7,11);
@@ -111,6 +111,38 @@ void Comms()
     if (receivedChar=='d') 
     {
       pos_target=CLOSE;
+    }
+    if (receivedChar=='g')
+    {
+      digitalWrite(spout2_drink3,LOW);
+      digitalWrite(spout2_drink4,HIGH);
+      digitalWrite(spout1_drink1,HIGH);
+      digitalWrite(spout1_drink2,HIGH);
+     
+    }
+    if (receivedChar=='h')
+    {
+      digitalWrite(spout2_drink3,HIGH);
+      digitalWrite(spout2_drink4,LOW);
+      digitalWrite(spout1_drink1,HIGH);
+      digitalWrite(spout1_drink2,HIGH);
+     
+    }
+    if (receivedChar=='e')
+    {
+      digitalWrite(spout2_drink3,HIGH);
+      digitalWrite(spout2_drink4,HIGH);
+      digitalWrite(spout1_drink1,LOW);
+      digitalWrite(spout1_drink2,HIGH);
+     
+    }
+    if (receivedChar=='f')
+    {
+      digitalWrite(spout2_drink3,HIGH);
+      digitalWrite(spout2_drink4,HIGH);
+      digitalWrite(spout1_drink1,HIGH);
+      digitalWrite(spout1_drink2,LOW);
+     
     }
   }
 }
