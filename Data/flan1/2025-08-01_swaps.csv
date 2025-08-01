@@ -1,0 +1,10 @@
+﻿Mode,Start_Time,Animal,Unit,Drinks1,Drinks2,Drinks3,Drinks4,Swap_direction
+initialize,2025-08-01 10:45:18.210556,0,1,0,0,0,0,initialize
+initialize,2025-08-01 10:45:18.210559,0,2,0,0,0,0,initialize
+1,2025-08-01 10:54:48.707423,1111110209209,2,0,0,0,648,4->3
+initialize,2025-08-01 11:19:52.525091,0,1,0,0,0,0,initialize
+initialize,2025-08-01 11:19:52.525094,0,2,0,0,0,0,initialize
+initialize,2025-08-01 11:44:30.694014,0,1,0,0,0,0,initialize
+initialize,2025-08-01 11:44:30.694018,0,2,0,0,0,0,initialize
+initialize,2025-08-01 11:45:22.694106,0,1,0,0,0,0,initialize
+initialize,2025-08-01 11:45:22.694109,0,2,0,0,0,0,initialize
